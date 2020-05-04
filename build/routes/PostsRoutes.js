@@ -27,8 +27,10 @@ class PostRoutes {
         });
     }
     getPost(req, res) {
-        console.log(req.body);
-        res.json('recibido');
+        return __awaiter(this, void 0, void 0, function* () {
+            const post = yield Post_1.default.find({ url: { $regex: req.params.url } });
+            res.json(post);
+        });
     }
     createPost(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -38,9 +40,18 @@ class PostRoutes {
             res.json({ data: newPost });
         });
     }
-    updatePost() {
+    updatePost(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { url } = req.params;
+            const post = yield Post_1.default.findOneAndUpdate({ url }, req.body);
+            res.json({ status: res.status, data: post });
+        });
     }
-    deletePost() {
+    deletePost(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield Post_1.default.findOneAndRemove({ url: req.params.url });
+            res.json({ response: 'eliminado' });
+        });
     }
     routes() {
         this.router.get('/', this.getPosts);

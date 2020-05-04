@@ -11,19 +11,19 @@ class PostRoutes{
         this.routes();
     }
 
-   async  getPosts(req: Request, res: Response){
+   public async  getPosts(req: Request, res: Response): Promise<void>{
         const posts = await Post.find();
         res.json(posts);
         //res.send('Posts');
         
     }
 
-    getPost(req: Request, res: Response){
-        console.log(req.body);
-        res.json('recibido');
+    public async getPost(req: Request, res: Response): Promise<void> {
+        const post = await Post.find({ url: { $regex: req.params.url } });
+        res.json(post);
     }
 
-    async createPost(req: Request, res: Response){
+    public async createPost(req: Request, res: Response): Promise<void>{
         const {title, url,content, image} = req.body;
         const newPost = new Post({title, url, content, image});
         await newPost.save();
@@ -32,12 +32,15 @@ class PostRoutes{
 
     }
 
-    updatePost(){
-
+    public async updatePost(req: Request, res: Response): Promise<void>{
+        const { url } = req.params;
+        const post = await Post.findOneAndUpdate({url}, req.body);
+        res.json({status: res.status, data: post});
     }
 
-    deletePost(){
-
+    public async deletePost(req: Request, res: Response): Promise<void> {
+        await Post.findOneAndRemove({ url: req.params.url });
+        res.json({ response: 'eliminado' });
     }
 
     routes(){
